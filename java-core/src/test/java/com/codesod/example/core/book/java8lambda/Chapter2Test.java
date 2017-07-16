@@ -24,7 +24,7 @@ import org.junit.Test;
 /**
  * @author <a href="mailto:sayem64@gmail.com">MD Sayem Ahmed</a>
  */
-public class Chapter2 {
+public class Chapter2Test {
 
   @Test
   public void answerForQuestion2() {

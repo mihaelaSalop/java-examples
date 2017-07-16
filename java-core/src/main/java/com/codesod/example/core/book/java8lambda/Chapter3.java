@@ -17,6 +17,7 @@ package com.codesod.example.core.book.java8lambda;
 
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 /**
  * @author <a href="mailto:sayem64@gmail.com">MD Sayem Ahmed</a>
@@ -25,6 +26,11 @@ class Chapter3 {
 
   static int sumArrayUsingReduce(int[] numbers) {
     return Arrays.stream(Objects.requireNonNull(numbers, "Input array cannot be null"))
+        .reduce(0, (accumulator, element) -> accumulator + element);
+  }
+
+  static int addUp(Stream<Integer> numbers) {
+    return Objects.requireNonNull(numbers, "Input cannnot be null")
         .reduce(0, (accumulator, element) -> accumulator + element);
   }
 }

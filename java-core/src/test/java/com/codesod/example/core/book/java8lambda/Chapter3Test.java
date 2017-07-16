@@ -18,12 +18,13 @@ package com.codesod.example.core.book.java8lambda;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
+import java.util.stream.Stream;
 import org.junit.Test;
 
 /**
  * @author <a href="mailto:sayem64@gmail.com">MD Sayem Ahmed</a>
  */
-public class SumArrayUsingReduceTest {
+public class Chapter3Test {
 
   @Test
   public void givenNullInputArray_whenSumArrayUsingReduce_thenExceptionThrown() {
@@ -56,5 +57,23 @@ public class SumArrayUsingReduceTest {
     int sum = Chapter3.sumArrayUsingReduce(inputArray);
 
     assertThat(sum).isEqualTo(11);
+  }
+
+  @Test
+  public void givenEmptyStream_whenAddUp_thenReturnsZero() {
+    Stream<Integer> inputStream = Stream.empty();
+
+    int sum = Chapter3.addUp(inputStream);
+
+    assertThat(sum).isZero();
+  }
+
+  @Test
+  public void givenStreamsWithElements_whenAddUp_thenSumIsReturned() {
+    Stream<Integer> inputStream = Stream.of(1, -3, 4, 5, 10);
+
+    int sum = Chapter3.addUp(inputStream);
+
+    assertThat(sum).isEqualTo(17);
   }
 }
