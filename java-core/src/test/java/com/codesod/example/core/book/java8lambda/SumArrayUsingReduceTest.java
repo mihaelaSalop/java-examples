@@ -23,16 +23,16 @@ import org.junit.Test;
 /**
  * @author <a href="mailto:sayem64@gmail.com">MD Sayem Ahmed</a>
  */
-public class Chapter3Test {
+public class SumArrayUsingReduceTest {
 
   @Test
-  public void givenNull_whenSumArrayUsingReduce_thenExceptionThrown() {
+  public void givenNullInputArray_whenSumArrayUsingReduce_thenExceptionThrown() {
     assertThatExceptionOfType(NullPointerException.class)
         .isThrownBy(() -> Chapter3.sumArrayUsingReduce(null));
   }
 
   @Test
-  public void givenEmptyArray_whenSumArrayUsingReduce_thenZeroReturned() {
+  public void givenEmptyInputArray_whenSumArrayUsingReduce_thenZeroReturned() {
     int[] inputArray = {};
 
     int sum = Chapter3.sumArrayUsingReduce(inputArray);
@@ -41,16 +41,16 @@ public class Chapter3Test {
   }
 
   @Test
-  public void givenArrayWithOneElement_whenSumArrayUsingReduce_thenSumReturned() {
-    int[] inputArray = {};
+  public void givenInputArrayWithOneElement_whenSumArrayUsingReduce_thenSumReturned() {
+    int[] inputArray = { 1 };
 
     int sum = Chapter3.sumArrayUsingReduce(inputArray);
 
-    assertThat(sum).isZero();
+    assertThat(sum).isEqualTo(1);
   }
 
   @Test
-  public void givenArrayWithMultipleElements_whenSumArrayUsingReduce_thenSumReturned() {
+  public void givenInputArrayWithMultipleElements_whenSumArrayUsingReduce_thenSumReturned() {
     int[] inputArray = {1, -2, 3, 4, 5};
 
     int sum = Chapter3.sumArrayUsingReduce(inputArray);
