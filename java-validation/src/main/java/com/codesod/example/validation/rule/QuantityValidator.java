@@ -18,16 +18,29 @@ package com.codesod.example.validation.rule;
 import com.codesod.example.validation.OrderDTO.OrderItem;
 
 import java.util.Optional;
+import java.util.function.Consumer;
 
 class QuantityValidator implements OrderItemValidator {
+  static final String MISSING_QUANTITY_ERROR = "Quantity must be given";
+  static final String INVALID_QUANTITY_ERROR = "Given quantity %s is not valid.";
 
   @Override
-  public void validate(OrderItem orderItem) {
-    Integer quantity = Optional.ofNullable(orderItem)
+  public ErrorNotification validate(OrderItem orderItem) {
+    ErrorNotification errorNotification = new ErrorNotification();
+    Optional.ofNullable(orderItem)
         .map(OrderItem::getQuantity)
-        .orElseThrow(() -> new IllegalArgumentException("Quantity must be given"));
-    if (quantity <= 0) {
-      throw new IllegalArgumentException("Given quantity " + quantity + " is not valid.");
-    }
+        .ifPresentOrElse(
+            validateQuantity(errorNotification),
+            () -> errorNotification.addError(MISSING_QUANTITY_ERROR)
+        );
+    return errorNotification;
+  }
+
+  private Consumer<? super Integer> validateQuantity(ErrorNotification errorNotification) {
+    return quantity -> {
+      if (quantity <= 0) {
+        errorNotification.addError(String.format(INVALID_QUANTITY_ERROR, quantity));
+      }
+    };
   }
 }

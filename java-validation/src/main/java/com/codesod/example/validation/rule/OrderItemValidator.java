@@ -18,5 +18,5 @@ package com.codesod.example.validation.rule;
 import com.codesod.example.validation.OrderDTO.OrderItem;
 
 public interface OrderItemValidator {
-  void validate(OrderItem orderItem);
+  ErrorNotification validate(OrderItem orderItem);
 }

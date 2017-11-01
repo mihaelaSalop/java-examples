@@ -15,9 +15,9 @@
  */
 package com.codesod.example.validation.rule;
 
-import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
-
 import com.codesod.example.validation.OrderDTO.OrderItem;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.Test;
 
@@ -27,28 +27,32 @@ public class ItemDescriptionValidatorTest {
   public void validate_descriptionIsNull_invalid() {
     ItemDescriptionValidator validator = new ItemDescriptionValidator();
 
-    assertThatIllegalArgumentException()
-        .isThrownBy(() -> validator.validate(new OrderItem()));
+    ErrorNotification errorNotification = validator.validate(new OrderItem());
+
+    assertThat(errorNotification.getAllErrors())
+        .isEqualTo(ItemDescriptionValidator.MISSING_ITEM_DESCRIPTION);
   }
 
   @Test
   public void validate_descriptionIsBlank_invalid() {
     OrderItem orderItem = new OrderItem();
     orderItem.setDescription("     ");
-
     ItemDescriptionValidator validator = new ItemDescriptionValidator();
 
-    assertThatIllegalArgumentException()
-        .isThrownBy(() -> validator.validate(orderItem));
+    ErrorNotification errorNotification = validator.validate(orderItem);
+
+    assertThat(errorNotification.getAllErrors())
+        .isEqualTo(ItemDescriptionValidator.MISSING_ITEM_DESCRIPTION);
   }
 
   @Test
   public void validate_descriptionGiven_valid() {
     OrderItem orderItem = new OrderItem();
     orderItem.setDescription("dummy description");
-
     ItemDescriptionValidator validator = new ItemDescriptionValidator();
 
-    validator.validate(orderItem);
+    ErrorNotification errorNotification = validator.validate(orderItem);
+
+    assertThat(errorNotification.getAllErrors()).isEmpty();
   }
 }

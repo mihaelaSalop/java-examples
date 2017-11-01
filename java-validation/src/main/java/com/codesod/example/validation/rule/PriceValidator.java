@@ -19,21 +19,33 @@ import com.codesod.example.validation.OrderDTO.OrderItem;
 
 import java.math.BigDecimal;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 class PriceValidator implements OrderItemValidator {
+  static final String PRICE_EMPTY_ERROR = "Price cannot be empty.";
+  static final String PRICE_INVALID_ERROR_FORMAT = "Given price [%s] is not in valid format";
 
   @Override
-  public void validate(OrderItem orderItem) {
-    String price = Optional.ofNullable(orderItem)
+  public ErrorNotification validate(OrderItem orderItem) {
+    ErrorNotification errorNotification = new ErrorNotification();
+    Optional.ofNullable(orderItem)
         .map(OrderItem::getPrice)
         .map(String::trim)
         .filter(itemPrice -> !itemPrice.isEmpty())
-        .orElseThrow(() -> new IllegalArgumentException("Price cannot be empty."));
+        .ifPresentOrElse(
+            validatePriceFormat(errorNotification),
+            () -> errorNotification.addError(PRICE_EMPTY_ERROR)
+        );
+    return errorNotification;
+  }
 
-    try {
-      new BigDecimal(price);
-    } catch (NumberFormatException ex) {
-      throw new IllegalArgumentException("Given price [" + price + "] is not in valid format", ex);
-    }
+  private Consumer<? super String> validatePriceFormat(ErrorNotification errorNotification) {
+    return itemPrice -> {
+      try {
+        new BigDecimal(itemPrice);
+      } catch (NumberFormatException ex) {
+        errorNotification.addError(String.format(PRICE_INVALID_ERROR_FORMAT, itemPrice));
+      }
+    };
   }
 }

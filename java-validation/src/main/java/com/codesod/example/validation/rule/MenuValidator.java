@@ -19,21 +19,34 @@ import com.codesod.example.validation.MenuRepository;
 import com.codesod.example.validation.OrderDTO.OrderItem;
 
 import java.util.Optional;
+import java.util.function.Consumer;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 class MenuValidator implements OrderItemValidator {
   private final MenuRepository menuRepository;
 
-  @Override
-  public void validate(OrderItem orderItem) {
-    String menuId = Optional.ofNullable(orderItem.getMenuId())
-        .map(String::trim)
-        .filter(id -> !id.isEmpty())
-        .orElseThrow(() -> new IllegalArgumentException("A menu item must be specified."));
+  static final String MISSING_MENU_ERROR = "A menu item must be specified.";
+  static final String INVALID_MENU_ERROR_FORMAT = "Given menu [%s] does not exist.";
 
-    if (!menuRepository.menuExists(menuId)) {
-      throw new IllegalArgumentException("Given menu [" + menuId + "] does not exist.");
-    }
+  @Override
+  public ErrorNotification validate(OrderItem orderItem) {
+    ErrorNotification errorNotification = new ErrorNotification();
+    Optional.ofNullable(orderItem.getMenuId())
+        .map(String::trim)
+        .filter(menuId -> !menuId.isEmpty())
+        .ifPresentOrElse(
+            validateMenuExists(errorNotification),
+            () -> errorNotification.addError(MISSING_MENU_ERROR)
+        );
+    return errorNotification;
+  }
+
+  private Consumer<String> validateMenuExists(ErrorNotification errorNotification) {
+    return menuId -> {
+      if (!menuRepository.menuExists(menuId)) {
+        errorNotification.addError(String.format(INVALID_MENU_ERROR_FORMAT, menuId));
+      }
+    };
   }
 }

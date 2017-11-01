@@ -15,9 +15,9 @@
  */
 package com.codesod.example.validation.rule;
 
-import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
-
 import com.codesod.example.validation.OrderDTO.OrderItem;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.Test;
 
@@ -25,43 +25,45 @@ public class PriceValidatorTest {
 
   @Test
   public void validate_priceNull_invalid() {
-    OrderItem orderItem = new OrderItem();
     PriceValidator validator = new PriceValidator();
 
-    assertThatIllegalArgumentException()
-        .isThrownBy(() -> validator.validate(orderItem));
+    ErrorNotification errorNotification = validator.validate(new OrderItem());
+
+    assertThat(errorNotification.getAllErrors()).isEqualTo(PriceValidator.PRICE_EMPTY_ERROR);
   }
 
   @Test
   public void validate_priceBlank_invalid() {
     OrderItem orderItem = new OrderItem();
     orderItem.setPrice(" ");
-
     PriceValidator validator = new PriceValidator();
 
-    assertThatIllegalArgumentException()
-        .isThrownBy(() -> validator.validate(orderItem));
+    ErrorNotification errorNotification = validator.validate(orderItem);
+
+    assertThat(errorNotification.getAllErrors()).isEqualTo(PriceValidator.PRICE_EMPTY_ERROR);
   }
 
   @Test
   public void validate_priceFormatNotValid_invalid() {
     OrderItem orderItem = new OrderItem();
-    orderItem.setPrice("dummy price");
-
+    String price = "dummy price";
+    orderItem.setPrice(price);
     PriceValidator validator = new PriceValidator();
 
-    assertThatIllegalArgumentException()
-        .isThrownBy(() -> validator.validate(orderItem))
-        .withCauseInstanceOf(NumberFormatException.class);
+    ErrorNotification errorNotification = validator.validate(orderItem);
+
+    assertThat(errorNotification.getAllErrors()).isEqualTo(
+        String.format(PriceValidator.PRICE_INVALID_ERROR_FORMAT, price));
   }
 
   @Test
   public void validate_priceValid_validated() {
     OrderItem orderItem = new OrderItem();
     orderItem.setPrice("100");
-
     PriceValidator validator = new PriceValidator();
 
-    validator.validate(orderItem);
+    ErrorNotification errorNotification = validator.validate(orderItem);
+
+    assertThat(errorNotification.getAllErrors()).isEmpty();
   }
 }

@@ -15,6 +15,7 @@
  */
 package com.codesod.example.validation;
 
+import com.codesod.example.validation.rule.ErrorNotification;
 import com.codesod.example.validation.rule.OrderItemValidator;
 
 import org.springframework.stereotype.Service;
@@ -29,8 +30,14 @@ class OrderService {
   private final OrderItemValidator validator;
 
   void createOrder(OrderDTO orderDTO) {
+    ErrorNotification errorNotification = new ErrorNotification();
     orderDTO.getOrderItems()
-        .forEach(validator::validate);
+        .stream()
+        .map(validator::validate)
+        .forEach(errorNotification::addAll);
+    if (errorNotification.hasError()) {
+      throw new IllegalArgumentException(errorNotification.getAllErrors());
+    }
 
     log.info("Order {} saved", orderDTO);
   }

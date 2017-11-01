@@ -15,21 +15,31 @@
  */
 package com.codesod.example.validation.rule;
 
-import com.codesod.example.validation.OrderDTO.OrderItem;
+import static java.util.stream.Collectors.joining;
 
+import java.util.ArrayList;
 import java.util.List;
-import lombok.RequiredArgsConstructor;
 
-@RequiredArgsConstructor
-class OrderItemValidatorComposite implements OrderItemValidator {
-  private final List<OrderItemValidator> validators;
+/**
+ * @author <a href="mailto:sayem64@gmail.com">MD Sayem Ahmed</a>
+ */
+public class ErrorNotification {
+  private List<String> errors = new ArrayList<>();
 
-  @Override
-  public ErrorNotification validate(OrderItem orderItem) {
-    ErrorNotification errorNotification = new ErrorNotification();
-    validators.stream()
-        .map(validator -> validator.validate(orderItem))
-        .forEach(errorNotification::addAll);
-    return errorNotification;
+  public void addAll(ErrorNotification errorNotification) {
+    this.errors.addAll(errorNotification.errors);
+  }
+
+  public boolean hasError() {
+    return !errors.isEmpty();
+  }
+
+  public String getAllErrors() {
+    return errors.stream()
+        .collect(joining(", "));
+  }
+
+  void addError(String message) {
+    this.errors.add(message);
   }
 }

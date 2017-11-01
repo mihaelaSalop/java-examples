@@ -15,13 +15,13 @@
  */
 package com.codesod.example.validation.rule;
 
-import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import com.codesod.example.validation.MenuRepository;
+import com.codesod.example.validation.OrderDTO.OrderItem;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-
-import com.codesod.example.validation.MenuRepository;
-import com.codesod.example.validation.OrderDTO.OrderItem;
 
 import org.junit.Test;
 
@@ -30,26 +30,28 @@ public class MenuValidatorTest {
   @Test
   public void validate_menuIdInvalid_invalid() {
     OrderItem orderItem = new OrderItem();
-    orderItem.setMenuId("some menu id");
+    String menuId = "some menu id";
+    orderItem.setMenuId(menuId);
     MenuRepository menuRepository = mock(MenuRepository.class);
     when(menuRepository.menuExists(any())).thenReturn(false);
-
     MenuValidator validator = new MenuValidator(menuRepository);
 
-    assertThatIllegalArgumentException()
-        .isThrownBy(() -> validator.validate(orderItem));
+    ErrorNotification errorNotification = validator.validate(orderItem);
+
+    assertThat(errorNotification.getAllErrors())
+        .isEqualTo(String.format(MenuValidator.INVALID_MENU_ERROR_FORMAT, menuId));
   }
 
   @Test
   public void validate_menuIdNull_invalid() {
-    OrderItem orderItem = new OrderItem();
     MenuRepository menuRepository = mock(MenuRepository.class);
     when(menuRepository.menuExists(any())).thenReturn(true);
-
     MenuValidator validator = new MenuValidator(menuRepository);
 
-    assertThatIllegalArgumentException()
-        .isThrownBy(() -> validator.validate(orderItem));
+    ErrorNotification errorNotification = validator.validate(new OrderItem());
+
+    assertThat(errorNotification.getAllErrors())
+        .isEqualTo(MenuValidator.MISSING_MENU_ERROR);
   }
 
   @Test
@@ -58,11 +60,12 @@ public class MenuValidatorTest {
     orderItem.setMenuId("       \t");
     MenuRepository menuRepository = mock(MenuRepository.class);
     when(menuRepository.menuExists(any())).thenReturn(true);
-
     MenuValidator validator = new MenuValidator(menuRepository);
 
-    assertThatIllegalArgumentException()
-        .isThrownBy(() -> validator.validate(orderItem));
+    ErrorNotification errorNotification = validator.validate(orderItem);
+
+    assertThat(errorNotification.getAllErrors())
+        .isEqualTo(MenuValidator.MISSING_MENU_ERROR);
   }
 
   @Test
@@ -72,9 +75,10 @@ public class MenuValidatorTest {
     orderItem.setMenuId(menuId);
     MenuRepository menuRepository = mock(MenuRepository.class);
     when(menuRepository.menuExists(menuId)).thenReturn(true);
-
     MenuValidator validator = new MenuValidator(menuRepository);
 
-    validator.validate(orderItem);
+    ErrorNotification errorNotification = validator.validate(orderItem);
+
+    assertThat(errorNotification.getAllErrors()).isEmpty();
   }
 }

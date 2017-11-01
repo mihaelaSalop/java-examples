@@ -15,9 +15,9 @@
  */
 package com.codesod.example.validation;
 
-import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
-
 import com.codesod.example.validation.OrderDTO.OrderItem;
+
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -49,8 +49,7 @@ public class OrderServiceIT {
     OrderDTO orderDTO = createOrder(orderItem);
 
     assertThatIllegalArgumentException()
-        .isThrownBy(() -> orderService.createOrder(orderDTO))
-        .withCauseInstanceOf(NumberFormatException.class);
+        .isThrownBy(() -> orderService.createOrder(orderDTO));
   }
 
   @Test

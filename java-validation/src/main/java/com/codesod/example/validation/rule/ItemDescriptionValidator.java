@@ -20,13 +20,19 @@ import com.codesod.example.validation.OrderDTO.OrderItem;
 import java.util.Optional;
 
 class ItemDescriptionValidator implements OrderItemValidator {
+  static final String MISSING_ITEM_DESCRIPTION = "Item description should be provided";
 
   @Override
-  public void validate(OrderItem orderItem) {
+  public ErrorNotification validate(OrderItem orderItem) {
+    ErrorNotification errorNotification = new ErrorNotification();
     Optional.ofNullable(orderItem)
         .map(OrderItem::getDescription)
         .map(String::trim)
         .filter(description -> !description.isEmpty())
-        .orElseThrow(() -> new IllegalArgumentException("Item description should be provided"));
+        .ifPresentOrElse(
+            description -> {},
+            () -> errorNotification.addError(MISSING_ITEM_DESCRIPTION)
+        );
+    return errorNotification;
   }
 }
